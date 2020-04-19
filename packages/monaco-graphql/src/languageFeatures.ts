@@ -5,7 +5,7 @@
  *  LICENSE file in the root directory of this source tree.
  */
 
-import { GraphQLWorker } from './graphql.worker';
+import { GraphQLWorker } from './GraphQLWorker';
 import { LanguageServiceDefaultsImpl } from './defaults';
 
 import {

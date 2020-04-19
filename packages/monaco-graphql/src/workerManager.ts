@@ -7,7 +7,7 @@
 
 import * as monaco from 'monaco-editor';
 import { LanguageServiceDefaultsImpl } from './defaults';
-import { GraphQLWorker } from './graphql.worker';
+import { GraphQLWorker } from './GraphQLWorker';
 
 import IDisposable = monaco.IDisposable;
 import Uri = monaco.Uri;
