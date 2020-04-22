@@ -79,12 +79,18 @@ export class WorkerManager {
           schemaUrl: this._defaults.diagnosticsOptions.schemaUri,
         },
       });
-      this._client = await this._worker.getProxy();
+      try {
+        this._client = await this._worker.getProxy();
+        console.log('client', this._client);
+      } catch (error) {
+        throw Error('Error loading serviceworker proxy');
+      }
     }
     return this._client as GraphQLWorker;
   }
 
   async getLanguageServiceWorker(...resources: Uri[]): Promise<GraphQLWorker> {
+    console.log('getting client');
     const client = await this._getClient();
     await this._worker!.withSyncedResources(resources);
     return client;

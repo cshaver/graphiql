@@ -26,7 +26,11 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl): IDisposable {
   const worker: languageFeatures.WorkerAccessor = (
     ...uris: Uri[]
   ): Promise<GraphQLWorker> => {
-    return client.getLanguageServiceWorker(...uris);
+    try {
+      return client.getLanguageServiceWorker(...uris);
+    } catch (err) {
+      throw Error('Error fetching graphql language service worker');
+    }
   };
 
   monaco.languages.setLanguageConfiguration(languageId, richLanguageConfig);

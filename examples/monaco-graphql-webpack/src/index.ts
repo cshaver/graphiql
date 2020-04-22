@@ -51,6 +51,7 @@ const resultsEditor = monaco.editor.create(
   document.getElementById('results') as HTMLElement,
   {
     model: variablesModel,
+    automaticLayout: true,
   },
 );
 const variablesEditor = monaco.editor.create(
@@ -58,6 +59,7 @@ const variablesEditor = monaco.editor.create(
   {
     value: `{ }`,
     language: 'json',
+    automaticLayout: true,
   },
 );
 const model = monaco.editor.createModel(
@@ -78,6 +80,7 @@ const operationEditor = monaco.editor.create(
   document.getElementById('operation') as HTMLElement,
   {
     model,
+    automaticLayout: true,
   },
 );
 

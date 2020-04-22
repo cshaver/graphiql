@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect } from 'react';
 import { GraphQLSchema } from 'graphql';
-import { defaultSchemaLoader } from './common';
-import { SchemaConfig } from './types';
+import { defaultSchemaLoader } from '../common';
+import { SchemaConfig } from '../types';
 import {
   SchemaAction,
   SchemaActionTypes,
   schemaRequestedAction,
   schemaSucceededAction,
   schemaErroredAction,
-} from './schemaActions';
+} from '../actions/schemaActions';
 
 /**
  * Initial State
@@ -27,7 +27,7 @@ const isDev = window.location.hostname === 'localhost';
 
 const uri = isDev
   ? 'http://localhost:8080/graphql'
-  : 'https://swapi-graphql.netlify.com/.netlify/functions/index';
+  : 'https://swapi-graphql.netlify.app/.netlify/functions/index';
 
 export const initialReducerState: SchemaState = {
   isLoading: false,

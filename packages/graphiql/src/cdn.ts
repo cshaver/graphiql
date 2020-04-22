@@ -20,3 +20,8 @@ import './css/history.css';
 
 export default GraphiQL;
 import { GraphiQL } from './components/GraphiQL';
+
+if (typeof window !== 'undefined') {
+  // @ts-ignore
+  window.GraphiQL = GraphiQL;
+}

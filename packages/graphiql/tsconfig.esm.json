@@ -6,7 +6,10 @@
     "composite": false,
     "jsx": "react",
     "baseUrl": ".",
-    "target": "es5"
+    "target": "es5",
+    "paths": {
+      "src/*": ["*"]
+    }
   },
   "include": ["src"],
   "exclude": [

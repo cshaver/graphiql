@@ -4,31 +4,32 @@
  *  This source code is licensed under the MIT license found in the
  *  LICENSE file in the root directory of this source tree.
  */
-
-import { loadSchema } from '@graphql-toolkit/core';
-import { UrlLoader } from '@graphql-toolkit/url-loader';
-import { Loader, SingleFileOptions } from '@graphql-toolkit/common';
 import { parse, GraphQLSchema, ParseOptions } from 'graphql';
-import { Position } from 'graphql-language-service-types';
-import * as graphqlLS from 'graphql-language-service-interface';
+import type { Position } from 'graphql-language-service-types';
+import {
+  getAutocompleteSuggestions,
+  getDiagnostics,
+  getHoverInformation,
+} from 'graphql-language-service-interface';
 
 type LSPConfig = {
   uri: string;
   parser?: typeof parse;
-  schemaLoaders?: Loader<string, SingleFileOptions>[];
+  schemaLoader?: typeof defaultSchemaLoader;
 };
+import { defaultSchemaLoader } from './schemaLoader';
 
 export class LanguageService {
   private _parser: typeof parse;
   private _uri: string;
   private _schema: GraphQLSchema | null;
-  private _schemaLoaders: Loader<string, SingleFileOptions>[];
+  private _schemaLoader: typeof defaultSchemaLoader;
 
-  constructor({ uri, parser, schemaLoaders }: LSPConfig) {
+  constructor({ uri, parser, schemaLoader }: LSPConfig) {
     this._uri = uri;
     this._parser = parser || parse;
     this._schema = null;
-    this._schemaLoaders = schemaLoaders || [new UrlLoader()];
+    this._schemaLoader = schemaLoader || defaultSchemaLoader;
   }
 
   public get schema() {
@@ -46,12 +47,8 @@ export class LanguageService {
     if (!this._uri) {
       throw new Error('uri missing');
     }
-    const schema = await loadSchema(this._uri, {
-      // load from endpoint
-      loaders: this._schemaLoaders,
-    });
-    this._schema = schema;
-    return schema;
+    const schema = await this._schemaLoader({ uri: this._uri });
+    return schema as GraphQLSchema;
   }
 
   async parse(text: string, options?: ParseOptions) {
@@ -63,19 +60,11 @@ export class LanguageService {
     documentText: string,
     position: Position,
   ) =>
-    graphqlLS.getAutocompleteSuggestions(
-      await this.getSchema(),
-      documentText,
-      position,
-    );
+    getAutocompleteSuggestions(await this.getSchema(), documentText, position);
 
   getDiagnostics = async (_uri: string, documentText: string) =>
-    graphqlLS.getDiagnostics(documentText, await this.getSchema());
+    getDiagnostics(documentText, await this.getSchema());
 
   getHover = async (_uri: string, documentText: string, position: Position) =>
-    graphqlLS.getHoverInformation(
-      await this.getSchema(),
-      documentText,
-      position,
-    );
+    getHoverInformation(await this.getSchema(), documentText, position);
 }

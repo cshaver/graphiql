@@ -4,7 +4,6 @@
  *  This source code is licensed under the MIT license found in the
  *  LICENSE file in the root directory of this source tree.
  */
-
 import type {
   worker,
   editor,
@@ -59,6 +58,7 @@ export class GraphQLWorker {
   ): Promise<(GraphQLCompletionItem & { range: IRange })[]> {
     const document = this._getTextDocument(uri);
     const graphQLPosition = toGraphQLPosition(position);
+
     const suggestions = await this._languageService.getCompletion(
       uri,
       document,

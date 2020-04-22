@@ -9,13 +9,10 @@ import React, {
   ComponentType,
   PropsWithChildren,
   MouseEventHandler,
-  Component,
-  FunctionComponent,
 } from 'react';
 import { GraphQLSchema, OperationDefinitionNode, GraphQLType } from 'graphql';
 
 import { ExecuteButton } from './ExecuteButton';
-import { ImagePreview } from './ImagePreview';
 import { ToolbarButton } from './ToolbarButton';
 import { QueryEditor } from './QueryEditor';
 import { VariableEditor } from './VariableEditor';
@@ -30,12 +27,17 @@ import find from '../utility/find';
 import { GetDefaultFieldNamesFn, fillLeafs } from '../utility/fillLeafs';
 import { getLeft, getTop } from '../utility/elementPosition';
 
-import { SchemaProvider, SchemaContext } from '../state/GraphiQLSchemaProvider';
+import {
+  SchemaProvider,
+  SchemaContext,
+} from '../api/providers/GraphiQLSchemaProvider';
+import { EditorsProvider } from '../api/providers/GraphiQLEditorsProvider';
 import {
   SessionProvider,
   SessionContext,
-} from '../state/GraphiQLSessionProvider';
-import { Fetcher, Unsubscribable } from '../state/types';
+} from '../api/providers/GraphiQLSessionProvider';
+import { Unsubscribable } from '../types';
+import { Fetcher } from '../api/types';
 
 const DEFAULT_DOC_EXPLORER_WIDTH = 350;
 
@@ -85,7 +87,6 @@ export type GraphiQLProps = {
   getDefaultFieldNames?: GetDefaultFieldNamesFn;
   editorTheme?: string;
   onToggleHistory?: (historyPaneOpen: boolean) => void;
-  ResultsTooltip?: typeof Component | FunctionComponent;
   readOnly?: boolean;
   docExplorerOpen?: boolean;
   formatResult?: (result: any) => string;
@@ -115,18 +116,20 @@ export type GraphiQLState = {
  */
 export const GraphiQL: React.FC<GraphiQLProps> = props => {
   return (
-    <SchemaProvider {...props}>
-      <SessionProvider sessionId={0} {...props}>
-        <GraphiQLInternals
-          {...{
-            formatResult,
-            formatError,
-            ...props,
-          }}>
-          {props.children}
-        </GraphiQLInternals>
-      </SessionProvider>
-    </SchemaProvider>
+    <EditorsProvider>
+      <SchemaProvider {...props}>
+        <SessionProvider sessionId={0} {...props}>
+          <GraphiQLInternals
+            {...{
+              formatResult,
+              formatError,
+              ...props,
+            }}>
+            {props.children}
+          </GraphiQLInternals>
+        </SessionProvider>
+      </SchemaProvider>
+    </EditorsProvider>
   );
 };
 
@@ -416,11 +419,7 @@ class GraphiQLInternals extends React.Component<
                   <div className="spinner" />
                 </div>
               )}
-              <ResultViewer
-                editorTheme={this.props.editorTheme}
-                ResultsTooltip={this.props.ResultsTooltip}
-                ImagePreview={ImagePreview}
-              />
+              <ResultViewer editorTheme={this.props.editorTheme} />
               {footer}
             </div>
           </div>

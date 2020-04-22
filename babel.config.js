@@ -28,6 +28,9 @@ module.exports = {
     test: {
       plugins: [require.resolve('babel-plugin-macros')],
     },
+    development: {
+      compact: false,
+    },
   },
   plugins: [
     require.resolve('@babel/plugin-proposal-class-properties'),

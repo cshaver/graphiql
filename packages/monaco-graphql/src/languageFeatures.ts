@@ -45,7 +45,7 @@ export class DiagnosticsAdapter {
       this._listener[model.uri.toString()] = model.onDidChangeContent(() => {
         clearTimeout(handle);
         // @ts-ignore
-        handle = setTimeout(() => this._doValidate(model.uri, modeId), 500);
+        handle = setTimeout(() => this._doValidate(model.uri, modeId), 200);
       });
 
       this._doValidate(model.uri, modeId);
@@ -188,7 +188,7 @@ export function toCompletion(
 
 export class CompletionAdapter implements languages.CompletionItemProvider {
   constructor(private _worker: WorkerAccessor) {
-    // this._worker = _worker
+    this._worker = _worker;
   }
 
   public get triggerCharacters(): string[] {

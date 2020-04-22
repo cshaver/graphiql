@@ -1,5 +1,7 @@
 import { OperationDefinitionNode } from 'graphql';
 
+import { Observable, Unsubscribable } from '../types';
+
 export type FetcherParams = {
   query: string;
   operationName?: string;
@@ -12,29 +14,6 @@ export type Fetcher = (
   graphQLParams: FetcherParams,
   schemaConfig: SchemaConfig,
 ) => Promise<FetcherResult> | Observable<FetcherResult>;
-
-// These type just taken from https://github.com/ReactiveX/rxjs/blob/master/src/internal/types.ts#L41
-export type Unsubscribable = {
-  unsubscribe: () => void;
-};
-
-export type Observable<T> = {
-  subscribe(opts: {
-    next: (value: T) => void;
-    error: (error: any) => void;
-    complete: () => void;
-  }): Unsubscribable;
-  subscribe(
-    next: (value: T) => void,
-    error: null | undefined,
-    complete: () => void,
-  ): Unsubscribable;
-  subscribe(
-    next?: (value: T) => void,
-    error?: (error: any) => void,
-    complete?: () => void,
-  ): Unsubscribable;
-};
 
 export type File = {
   uri: string;

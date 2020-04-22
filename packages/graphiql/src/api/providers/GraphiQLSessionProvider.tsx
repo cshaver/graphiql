@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { Fetcher } from './types';
+import { Fetcher } from '../types';
 
-import { GraphQLParams, SessionState, EditorContexts } from './types';
+import { GraphQLParams, SessionState, EditorContexts } from '../types';
 
-import { defaultFetcher } from './common';
+import { defaultFetcher } from '../common';
 import { SchemaContext } from './GraphiQLSchemaProvider';
+import { EditorContext } from './GraphiQLEditorsProvider';
 import {
   SessionAction,
   SessionActionTypes,
@@ -14,8 +15,9 @@ import {
   operationChangedAction,
   editorLoadedAction,
   operationErroredAction,
-} from './sessionActions';
-import { observableToPromise } from '../utility/observableToPromise';
+} from '../actions/sessionActions';
+
+import { observableToPromise } from '../../utility/observableToPromise';
 
 export type SessionReducer = React.Reducer<SessionState, SessionAction>;
 export interface SessionHandlers {
@@ -137,6 +139,7 @@ export function SessionProvider({
   children,
 }: SessionProviderProps) {
   const schemaState = React.useContext(SchemaContext);
+  const editorsState = React.useContext(EditorContext);
 
   const [state, dispatch] = React.useReducer<SessionReducer>(
     sessionReducer,
@@ -170,11 +173,15 @@ export function SessionProvider({
     async (operationName?: string) => {
       try {
         dispatch(operationRequestAction());
+        const { operation: op, variables: vars } = editorsState.editors;
+        const operation = op.editor.getValue();
+        const variables = vars.editor.getValue();
+
         const fetchValues: GraphQLParams = {
-          query: state.operation?.text ?? '',
+          query: operation ?? '',
         };
-        if (state.variables?.text) {
-          fetchValues.variables = state.variables.text as string;
+        if (variables && variables !== '{}') {
+          fetchValues.variables = variables;
         }
         if (operationName) {
           fetchValues.operationName = operationName as string;
@@ -194,8 +201,7 @@ export function SessionProvider({
       operationError,
       schemaState.config,
       sessionId,
-      state.operation,
-      state.variables,
+      editorsState.editors,
     ],
   );
 
