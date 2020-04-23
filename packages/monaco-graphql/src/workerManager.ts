@@ -81,7 +81,6 @@ export class WorkerManager {
       });
       try {
         this._client = await this._worker.getProxy();
-        console.log('client', this._client);
       } catch (error) {
         throw Error('Error loading serviceworker proxy');
       }
@@ -90,7 +89,6 @@ export class WorkerManager {
   }
 
   async getLanguageServiceWorker(...resources: Uri[]): Promise<GraphQLWorker> {
-    console.log('getting client');
     const client = await this._getClient();
     await this._worker!.withSyncedResources(resources);
     return client;

@@ -6,7 +6,6 @@
  */
 
 import React from 'react';
-import { KeyMod, KeyCode } from 'monaco-editor/esm/vs/editor/editor.api';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { GraphQLType } from 'graphql';
 import { useSessionContext } from '../api/providers/GraphiQLSessionProvider';
@@ -43,8 +42,8 @@ export function QueryEditor(props: QueryEditorProps) {
   const editorRef = React.useRef<monaco.editor.IStandaloneCodeEditor>();
   const [ignoreChangeEvent, setIgnoreChangeEvent] = React.useState(false);
   const cachedValueRef = React.useRef<string>(props.operation ?? '');
-
   const session = useSessionContext();
+
   const { loadEditor } = useEditorsContext();
 
   // function _onKeyUp(_cm: monaco.editor.IStandaloneCodeEditor, event: KeyboardEvent) {
@@ -77,19 +76,6 @@ export function QueryEditor(props: QueryEditorProps) {
         session.changeOperation(cachedValueRef.current);
       }
     });
-    const opAction: monaco.editor.IActionDescriptor = {
-      id: 'graphql-run',
-      label: 'Run Operation',
-      contextMenuOrder: 0,
-      contextMenuGroupId: 'graphql',
-      keybindings: [
-        // eslint-disable-next-line no-bitwise
-        KeyMod.CtrlCmd | KeyCode.Enter,
-      ],
-      run: async () => session.executeOperation(),
-    };
-
-    editor.addAction(opAction);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

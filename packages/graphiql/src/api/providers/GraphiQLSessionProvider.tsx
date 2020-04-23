@@ -173,7 +173,6 @@ export function SessionProvider({
     async (operationName?: string) => {
       try {
         dispatch(operationRequestAction());
-        console.log(editorsState.editors);
         const { operation: op, variables: vars } = editorsState.editors;
         const operation = op.editor.getValue();
         const variables = vars.editor.getValue();
@@ -196,6 +195,7 @@ export function SessionProvider({
         operationError(err);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       dispatch,
       fetcher,

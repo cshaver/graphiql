@@ -19,7 +19,6 @@ import GraphQLWorker from 'worker-loader!monaco-graphql/esm/graphql.worker';
 // @ts-ignore
 window.MonacoEnvironment = {
   getWorker(_workerId: string, label: string) {
-    console.log({ _workerId, label, GraphQLWorker });
     if (label === 'graphqlDev') {
       return new GraphQLWorker();
     }
