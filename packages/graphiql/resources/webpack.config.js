@@ -18,7 +18,7 @@ const resultConfig = {
   entry: './cdn.ts',
   context: rootPath('src'),
   output: {
-    path: isDev ? rootPath('build/dev') : rootPath('bundle/dist'),
+    path: isDev ? rootPath('bundle/dev') : rootPath('bundle/dist'),
     library: 'GraphiQL',
     libraryTarget: 'umd',
     libraryExport: 'default',
@@ -96,7 +96,7 @@ const resultConfig = {
     new HtmlWebpackPlugin({
       template: relPath('index.html.ejs'),
       inject: 'head',
-      filename: isDev && !isHMR ? 'dev.html' : 'index.html',
+      filename: 'index.html',
     }),
     new MiniCssExtractPlugin({
       // Options similar to the same options in webpackOptions.output

@@ -173,6 +173,7 @@ export function SessionProvider({
     async (operationName?: string) => {
       try {
         dispatch(operationRequestAction());
+        console.log(editorsState.editors);
         const { operation: op, variables: vars } = editorsState.editors;
         const operation = op.editor.getValue();
         const variables = vars.editor.getValue();

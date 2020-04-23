@@ -69,12 +69,9 @@ export function VariableEditor(props: VariableEditorProps) {
       divRef.current as HTMLDivElement,
       {
         value: session?.variables?.text || '',
-        tabSize: 2,
         language: 'json',
         // theme: props?.editorTheme ?? 'graphiql',
-        autoClosingBrackets: 'always',
         readOnly: props?.readOnly ?? false,
-        automaticLayout: true,
       },
     ));
     loadEditor('variables', editor);

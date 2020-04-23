@@ -2,6 +2,7 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
 
 import 'regenerator-runtime/runtime';
 import 'monaco-graphql/esm/monaco.contribution';
+// / <reference path='monaco-graphql/esm/typings/monaco.d.ts'/>
 
 // NOTE: using loader syntax becuase Yaml worker imports editor.worker directly and that
 // import shouldn't go through loader syntax.
@@ -12,7 +13,7 @@ import JSONWorker from 'worker-loader!monaco-editor/esm/vs/language/json/json.wo
 // @ts-ignore
 import GraphQLWorker from 'worker-loader!monaco-graphql/esm/graphql.worker';
 
-const SCHEMA_URL = 'https://swapi-graphql.netlify.app/.netlify/functions/index';
+const SCHEMA_URL = 'https://api.spacex.land/graphql/';
 
 // @ts-ignore
 window.MonacoEnvironment = {
@@ -65,10 +66,17 @@ const variablesEditor = monaco.editor.create(
 const model = monaco.editor.createModel(
   `
 query Example { 
-  allFilms {
-      films {
-          id
-      }
+  launchesPast(limit: 10) {
+    mission_name
+    # format me using the right click context menu
+              launch_date_local
+    launch_site {
+      site_name_long
+    }
+    links {
+      article_link
+      video_link
+    }
   }
 }
 `,
@@ -83,6 +91,9 @@ const operationEditor = monaco.editor.create(
     automaticLayout: true,
   },
 );
+
+// @ts-ignore
+monaco.languages.graphql.graphqlDefaults.setSchemaUri(SCHEMA_URL);
 
 /**
  * Basic Operation Exec Example

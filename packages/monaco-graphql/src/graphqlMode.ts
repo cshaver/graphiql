@@ -73,6 +73,7 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl): IDisposable {
 
   let modeConfiguration = defaults.modeConfiguration;
 
+  // when schema, etc changes
   defaults.onDidChange(
     // @ts-ignore
     (newDefaults: monaco.languages.graphql.LanguageServiceDefaultsImpl) => {

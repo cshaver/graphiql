@@ -12,7 +12,7 @@ if (process.env.ESM) {
 }
 
 if (process.env.CDN) {
-  envConfig.modules = 'umd';
+  envConfig.modules = 'amd';
   envConfig.targets = null;
   envConfig.ignoreBrowserslistConfig = false;
 }
