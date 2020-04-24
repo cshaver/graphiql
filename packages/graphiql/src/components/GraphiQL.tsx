@@ -19,7 +19,6 @@ import { VariableEditor } from './VariableEditor';
 import { ResultViewer } from './ResultViewer';
 import { DocExplorer } from './DocExplorer';
 import { QueryHistory } from './QueryHistory';
-import CodeMirrorSizer from '../utility/CodeMirrorSizer';
 import StorageAPI, { Storage } from '../utility/StorageAPI';
 import { VariableToType } from '../utility/getQueryFacts';
 
@@ -161,9 +160,6 @@ class GraphiQLInternals extends React.Component<
   // Ensure only the last executed editor query is rendered.
   _editorQueryID = 0;
   _storage: StorageAPI;
-
-  codeMirrorSizer!: CodeMirrorSizer;
-
   // refs
   docExplorerComponent: Maybe<DocExplorer>;
   graphiqlContainer: Maybe<HTMLDivElement>;
@@ -229,7 +225,6 @@ class GraphiQLInternals extends React.Component<
     //   this.fetchSchema();
     // }
     // Utility for keeping CodeMirror correctly sized.
-    this.codeMirrorSizer = new CodeMirrorSizer();
 
     global.g = this;
   }
@@ -657,10 +652,6 @@ class GraphiQLInternals extends React.Component<
       return false;
     }
     let target = event.target as Element;
-    // We use codemirror's gutter as the drag bar.
-    if (target.className.indexOf('CodeMirror-gutter') !== 0) {
-      return false;
-    }
     // Specifically the result window's drag bar.
     const resultWindow = this.resultViewerElement;
     while (target) {

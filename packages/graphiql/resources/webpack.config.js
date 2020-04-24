@@ -15,13 +15,18 @@ const rootPath = (...args) => relPath('../', ...args);
 
 const resultConfig = {
   mode: process.env.NODE_ENV,
-  entry: './cdn.ts',
+  entry: {
+    graphiql: './cdn.ts',
+    'graphql.worker': 'monaco-graphql/esm/graphql.worker',
+    'editor.worker': 'monaco-editor/esm/vs/editor/editor.worker.js',
+    'json.worker': 'monaco-editor/esm/vs/language/json/json.worker.js',
+  },
   context: rootPath('src'),
   output: {
     path: isDev ? rootPath('bundle/dev') : rootPath('bundle/dist'),
-    library: 'GraphiQL',
+    // library: 'GraphiQL',
     libraryTarget: 'umd',
-    libraryExport: 'default',
+    // libraryExport: 'default',
     filename: '[name].js',
     globalObject: 'this',
     // filename: isDev ? 'graphiql.js' : 'graphiql.min.js',
@@ -128,7 +133,7 @@ const cssLoaders = [
 if (!isDev) {
   cssLoaders.push('postcss-loader');
 } else {
-  resultConfig.plugins.push(new ErrorOverlayPlugin());
+  //  resultConfig.plugins.push(new ErrorOverlayPlugin());
 }
 
 if (process.env.ANALYZE) {

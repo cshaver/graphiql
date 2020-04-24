@@ -115,5 +115,5 @@ export function VariableEditor(props: VariableEditorProps) {
     }
   }, [queryFacts, queryFacts?.variableToType]);
 
-  return <div className="codemirrorWrap" ref={divRef} />;
+  return <div className="codemirrorWrap variables-editor" ref={divRef} />;
 }

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Fetcher } from '../types';
 
-import { GraphQLParams, SessionState, EditorContexts } from '../types';
+import { GraphQLParams, SessionState } from '../types';
 
 import { defaultFetcher } from '../common';
 import { SchemaContext } from './GraphiQLSchemaProvider';
@@ -13,7 +13,6 @@ import {
   operationSucceededAction,
   variableChangedAction,
   operationChangedAction,
-  editorLoadedAction,
   operationErroredAction,
 } from '../actions/sessionActions';
 
@@ -25,7 +24,6 @@ export interface SessionHandlers {
   changeVariables: (variables: string) => void;
   executeOperation: (operationName?: string) => Promise<void>;
   operationError: (error: Error) => void;
-  editorLoaded: (context: EditorContexts, editor: CodeMirror.Editor) => void;
   dispatch: React.Dispatch<SessionAction>;
 }
 
@@ -52,7 +50,6 @@ export const initialContextState: SessionState & SessionHandlers = {
   changeVariables: () => null,
   operationError: () => null,
   dispatch: () => null,
-  editorLoaded: () => null,
   ...initialState,
 };
 
@@ -69,16 +66,6 @@ const sessionReducer: SessionReducer = (state, action) => {
         ...state,
         operationLoading: true,
       };
-    case SessionActionTypes.EditorLoaded: {
-      const { context, editor } = action.payload;
-      return {
-        ...state,
-        editors: {
-          ...state.editors,
-          [context as EditorContexts]: editor,
-        },
-      };
-    }
     case SessionActionTypes.OperationChanged: {
       const { value } = action.payload;
       return {
@@ -151,12 +138,6 @@ export function SessionProvider({
     [dispatch, sessionId],
   );
 
-  const editorLoaded = React.useCallback(
-    (context: EditorContexts, editor: CodeMirror.Editor) =>
-      dispatch(editorLoadedAction(context, editor)),
-    [dispatch],
-  );
-
   const changeOperation = React.useCallback(
     (operationText: string) =>
       dispatch(operationChangedAction(operationText, sessionId)),
@@ -215,7 +196,6 @@ export function SessionProvider({
         changeOperation,
         changeVariables,
         operationError,
-        editorLoaded,
         dispatch,
       }}>
       {children}
