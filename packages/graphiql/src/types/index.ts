@@ -16,7 +16,8 @@ export type ReactElementLike = {
   props: any;
   key: string | number | null;
 };
-// These type just taken from https://github.com/ReactiveX/rxjs/blob/master/src/internal/types.ts#L41
+
+// These types just taken from https://github.com/ReactiveX/rxjs/blob/master/src/internal/types.ts#L41
 export type Unsubscribable = {
   unsubscribe: () => void;
 };

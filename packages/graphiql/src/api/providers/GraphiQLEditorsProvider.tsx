@@ -16,7 +16,6 @@ import JSONWorker from 'worker-loader!monaco-editor/esm/vs/language/json/json.wo
 // @ts-ignore
 import GraphQLWorker from 'worker-loader!monaco-graphql/esm/graphql.worker';
 
-// @ts-ignore
 window.MonacoEnvironment = {
   getWorker(_workerId: string, label: string) {
     if (label === 'graphqlDev') {
