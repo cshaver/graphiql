@@ -4,7 +4,7 @@ import 'regenerator-runtime/runtime';
 import 'monaco-graphql/esm/monaco.contribution';
 // / <reference path='monaco-graphql/esm/typings/monaco.d.ts'/>
 
-// NOTE: using loader syntax becuase Yaml worker imports editor.worker directly and that
+// NOTE: using loader syntax because Yaml worker imports editor.worker directly and that
 // import shouldn't go through loader syntax.
 // @ts-ignore
 import EditorWorker from 'worker-loader!monaco-editor/esm/vs/editor/editor.worker';
@@ -65,7 +65,7 @@ const variablesEditor = monaco.editor.create(
 );
 const model = monaco.editor.createModel(
   `
-query Example { 
+query Example {
   launchesPast(limit: 10) {
     mission_name
     # format me using the right click context menu
