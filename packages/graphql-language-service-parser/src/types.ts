@@ -142,3 +142,14 @@ export interface CharacterStreamInterface {
   indentation: () => number;
   current: () => string;
 }
+
+export type LexRulesType = {
+  Punctuation: RegExp;
+  Comment: RegExp;
+  [name: string]: RegExp;
+};
+
+export type ParseRulesType = {
+  Document: ParseRule;
+  [name: string]: ParseRule;
+};

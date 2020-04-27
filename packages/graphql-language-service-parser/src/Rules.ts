@@ -1,5 +1,5 @@
 /**
- *  Copyright (c) 2019 GraphQL Contributors
+ *  Copyright (c) 2020 GraphQL Contributors
  *  All rights reserved.
  *
  *  This source code is licensed under the license found in the
@@ -7,7 +7,14 @@
  *
  */
 
-import { State, Token, Rule, RuleKind, ParseRule } from './types';
+import {
+  State,
+  Token,
+  Rule,
+  RuleKind,
+  LexRulesType,
+  ParseRulesType,
+} from './types';
 import CharacterStream from './CharacterStream';
 import { opt, list, butNot, t, p } from './RuleHelpers';
 
@@ -26,7 +33,7 @@ export const isIgnored = (ch: string) =>
 /**
  * The lexer rules. These are exactly as described by the spec.
  */
-export const LexRules = {
+export const LexRules: LexRulesType = {
   // The Name token.
   Name: /^[_A-Za-z][_0-9A-Za-z]*/,
 
@@ -36,7 +43,7 @@ export const LexRules = {
   // Combines the IntValue and FloatValue tokens.
   Number: /^-?(?:0|(?:[1-9][0-9]*))(?:\.[0-9]*)?(?:[eE][+-]?[0-9]+)?/,
 
-  // Note the closing quote is made optional as an IDE experience improvment.
+  // Note the closing quote is made optional as an IDE experience improvement.
   String: /^(?:"""(?:\\"""|[^"]|"[^"]|""[^"])*(?:""")?|"(?:[^"\\]|\\(?:"|\/|\\|b|f|n|r|t|u[0-9a-fA-F]{4}))*"?)/,
 
   // Comments consume entire lines.
@@ -48,7 +55,7 @@ export const LexRules = {
  * spec. Minor deviations allow for a simpler implementation. The resulting
  * parser can parse everything the spec declares possible.
  */
-export const ParseRules: { [name: string]: ParseRule } = {
+export const ParseRules: ParseRulesType = {
   Document: [list('Definition')],
   Definition(token: Token): RuleKind | void {
     switch (token.value) {

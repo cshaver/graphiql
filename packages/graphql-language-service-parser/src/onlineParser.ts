@@ -1,11 +1,29 @@
 /**
- *  Copyright (c) 2019 GraphQL Contributors
+ *  Copyright (c) 2020 GraphQL Contributors
  *  All rights reserved.
  *
  *  This source code is licensed under the license found in the
  *  LICENSE file in the root directory of this source tree.
  *
  */
+
+import CharacterStream from './CharacterStream';
+import { isIgnored, LexRules, ParseRules } from './Rules';
+import {
+  LexRulesType,
+  ParseRulesType,
+  Rule,
+  RuleKind,
+  State,
+  Token,
+} from './types';
+
+type ParserOptions = {
+  eatWhitespace: (stream: CharacterStream) => boolean;
+  lexRules: LexRulesType;
+  parseRules: ParseRulesType;
+  editorConfig: { [name: string]: any };
+};
 
 /**
  * Builds an online immutable parser, designed to be used as part of a syntax
@@ -26,23 +44,6 @@
  *       configurations set.
  *
  */
-
-import {
-  LexRules as LexRulesType,
-  ParseRules as ParseRulesType,
-} from './Rules';
-import CharacterStream from './CharacterStream';
-import { State, Token, Rule, RuleKind } from './types';
-
-import { LexRules, ParseRules, isIgnored } from './Rules';
-
-type ParserOptions = {
-  eatWhitespace: (stream: CharacterStream) => boolean;
-  lexRules: typeof LexRulesType;
-  parseRules: typeof ParseRulesType;
-  editorConfig: { [name: string]: any };
-};
-
 export default function onlineParser(
   options: ParserOptions = {
     eatWhitespace: stream => stream.eatWhile(isIgnored),
@@ -205,25 +206,22 @@ function getToken(
 }
 
 // Utility function to assign from object to another object.
-function assign(to: Object, from: Object): Object {
-  const keys = Object.keys(from);
-  for (let i = 0; i < keys.length; i++) {
-    // @ts-ignore
-    // TODO: ParseRules as numerical index
-    to[keys[i]] = from[keys[i]];
+function assign(to: { [key: string]: any }, from: { [key: string]: any }) {
+  for (const key in from) {
+    to[key] = from[key];
   }
   return to;
 }
 
 // A special rule set for parsing comment tokens.
-const SpecialParseRules = {
+const SpecialParseRules = ({
   Invalid: [],
   Comment: [],
-};
+} as unknown) as ParseRulesType;
 
 // Push a new rule onto the state.
 function pushRule(
-  rules: typeof ParseRulesType,
+  rules: ParseRulesType,
   state: State,
   ruleKind: RuleKind,
 ): void {
@@ -334,16 +332,13 @@ function unsuccessful(state: State): void {
 
 // Given a stream, returns a { kind, value } pair, or null.
 function lex(
-  lexRules: typeof LexRulesType,
+  lexRules: LexRulesType,
   stream: CharacterStream,
 ): Token | null | undefined {
-  const kinds = Object.keys(lexRules);
-  for (let i = 0; i < kinds.length; i++) {
-    // @ts-ignore
-    // TODO: ParseRules as numerical index
-    const match = stream.match(lexRules[kinds[i]]);
+  for (const kind in lexRules) {
+    const match = stream.match(lexRules[kind]);
     if (match && match instanceof Array) {
-      return { kind: kinds[i], value: match[0] };
+      return { kind, value: match[0] };
     }
   }
 }
