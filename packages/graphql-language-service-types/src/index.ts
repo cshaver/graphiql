@@ -227,10 +227,10 @@ export type OutlineTree = {
   // Must be one or the other. If both are present, tokenizedText is preferred.
   plainText?: string;
   tokenizedText?: TokenizedText;
-  representativeName?: string;
+  representativeName: string;
   kind: string;
   startPosition: Position;
-  endPosition?: Position;
+  endPosition: Position;
   children: OutlineTree[];
 };
 
