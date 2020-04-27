@@ -23,7 +23,7 @@ import StorageAPI, { Storage } from '../utility/StorageAPI';
 import { VariableToType } from '../utility/getQueryFacts';
 
 import find from '../utility/find';
-import { GetDefaultFieldNamesFn, fillLeafs } from '../utility/fillLeafs';
+import { GetDefaultFieldNamesFn } from '../utility/fillLeafs';
 import { getLeft, getTop } from '../utility/elementPosition';
 
 import {
@@ -453,43 +453,42 @@ class GraphiQLInternals extends React.Component<
    * @public
    */
   public autoCompleteLeafs() {
-    const { insertions, result } = fillLeafs(
-      this.context.schema,
-      this.context?.operation.text,
-      this.props.getDefaultFieldNames,
-    );
-    if (insertions && insertions.length > 0) {
-      // @ts-ignore
-      const editor = this.getQueryEditor();
-      if (editor) {
-        editor.operation(() => {
-          const cursor = editor.getCursor();
-          const cursorIndex = editor.indexFromPos(cursor);
-          editor.setValue(result || '');
-          let added = 0;
-          const markers = insertions.map(({ index, string }) =>
-            editor.markText(
-              editor.posFromIndex(index + added),
-              editor.posFromIndex(index + (added += string.length)),
-              {
-                className: 'autoInsertedLeaf',
-                clearOnEnter: true,
-                title: 'Automatically added leaf fields',
-              },
-            ),
-          );
-          setTimeout(() => markers.forEach(marker => marker.clear()), 7000);
-          let newCursorIndex = cursorIndex;
-          insertions.forEach(({ index, string }) => {
-            if (index < cursorIndex) {
-              newCursorIndex += string.length;
-            }
-          });
-          editor.setCursor(editor.posFromIndex(newCursorIndex));
-        });
-      }
-    }
-    return result;
+    // const { insertions, result } = fillLeafs(
+    //   this.context.schema,
+    //   this.context?.operation.text,
+    //   this.props.getDefaultFieldNames,
+    // );
+    // if (insertions && insertions.length > 0) {
+    //   const editor = this.getQueryEditor();
+    //   if (editor) {
+    //     editor.operation(() => {
+    //       const cursor = editor.getCursor();
+    //       const cursorIndex = editor.indexFromPos(cursor);
+    //       editor.setValue(result || '');
+    //       let added = 0;
+    //       const markers = insertions.map(({ index, string }) =>
+    //         editor.markText(
+    //           editor.posFromIndex(index + added),
+    //           editor.posFromIndex(index + (added += string.length)),
+    //           {
+    //             className: 'autoInsertedLeaf',
+    //             clearOnEnter: true,
+    //             title: 'Automatically added leaf fields',
+    //           },
+    //         ),
+    //       );
+    //       setTimeout(() => markers.forEach(marker => marker.clear()), 7000);
+    //       let newCursorIndex = cursorIndex;
+    //       insertions.forEach(({ index, string }) => {
+    //         if (index < cursorIndex) {
+    //           newCursorIndex += string.length;
+    //         }
+    //       });
+    //       editor.setCursor(editor.posFromIndex(newCursorIndex));
+    //     });
+    //   }
+    // }
+    // return result;
   }
 
   handleClickReference = (reference: GraphQLType) => {
