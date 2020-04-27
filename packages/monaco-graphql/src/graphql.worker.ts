@@ -5,8 +5,7 @@
  *  LICENSE file in the root directory of this source tree.
  */
 
-import { worker as WorkerNamespace } from 'monaco-editor';
-// @ts-ignore
+import type { worker as workerNamespace, languages } from 'monaco-editor';
 import * as worker from 'monaco-editor/esm/vs/editor/editor.worker';
 
 import { GraphQLWorker } from './GraphQLWorker';
@@ -16,8 +15,8 @@ self.onmessage = () => {
     // ignore the first message
     worker.initialize(
       (
-        ctx: WorkerNamespace.IWorkerContext,
-        createData: monaco.languages.graphql.ICreateData,
+        ctx: workerNamespace.IWorkerContext,
+        createData: languages.graphql.ICreateData,
       ) => {
         return new GraphQLWorker(ctx, createData);
       },

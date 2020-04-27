@@ -7,8 +7,6 @@
 
 import * as monaco from 'monaco-editor';
 
-import IRichLanguageConfiguration = monaco.languages.LanguageConfiguration;
-
 import { WorkerManager } from './workerManager';
 import { GraphQLWorker } from './GraphQLWorker';
 import { monarchLanguage } from './monaco.contribution';
@@ -75,8 +73,7 @@ export function setupMode(defaults: LanguageServiceDefaultsImpl): IDisposable {
 
   // when schema, etc changes
   defaults.onDidChange(
-    // @ts-ignore
-    (newDefaults: monaco.languages.graphql.LanguageServiceDefaultsImpl) => {
+    (newDefaults: monaco.languages.graphql.LanguageServiceDefaults) => {
       if (newDefaults.modeConfiguration !== modeConfiguration) {
         modeConfiguration = newDefaults.modeConfiguration;
         registerProviders();
@@ -99,7 +96,7 @@ function disposeAll(disposables: IDisposable[]) {
   }
 }
 
-export const richLanguageConfig: IRichLanguageConfiguration = {
+export const richLanguageConfig: monaco.languages.LanguageConfiguration = {
   comments: {
     lineComment: '#',
   },

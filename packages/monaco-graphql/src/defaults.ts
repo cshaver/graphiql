@@ -5,12 +5,11 @@
  *  LICENSE file in the root directory of this source tree.
  */
 
-import * as monacoEditor from 'monaco-editor';
+import * as monaco from 'monaco-editor';
 
 export class LanguageServiceDefaultsImpl
   implements monaco.languages.graphql.LanguageServiceDefaults {
-  // @ts-ignore
-  private _onDidChange = new monacoEditor.Emitter<
+  private _onDidChange = new monaco.Emitter<
     monaco.languages.graphql.LanguageServiceDefaults
   >();
   private _diagnosticsOptions!: monaco.languages.graphql.DiagnosticsOptions;
@@ -26,7 +25,7 @@ export class LanguageServiceDefaultsImpl
     this.setDiagnosticsOptions(diagnosticsOptions);
     this.setModeConfiguration(modeConfiguration);
   }
-  // @ts-ignore
+
   get onDidChange(): monaco.IEvent<
     monaco.languages.graphql.LanguageServiceDefaults
   > {

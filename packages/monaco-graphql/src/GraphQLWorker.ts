@@ -35,7 +35,7 @@ export class GraphQLWorker {
   private _languageService: LanguageService;
   constructor(
     ctx: worker.IWorkerContext,
-    createData: monaco.languages.graphql.ICreateData,
+    createData: languages.graphql.ICreateData,
   ) {
     this._ctx = ctx;
     this._languageService = new LanguageService({ uri: createData.schemaUrl });

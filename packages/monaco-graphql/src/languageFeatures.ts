@@ -41,10 +41,9 @@ export class DiagnosticsAdapter {
         return;
       }
 
-      let handle: number;
+      let handle: ReturnType<typeof setTimeout>;
       this._listener[model.uri.toString()] = model.onDidChangeContent(() => {
         clearTimeout(handle);
-        // @ts-ignore
         handle = setTimeout(() => this._doValidate(model.uri, modeId), 200);
       });
 
@@ -256,7 +255,7 @@ export class HoverAdapter implements languages.HoverProvider {
     model: editor.IReadOnlyModel,
     position: Position,
     _token: CancellationToken,
-  ): Promise<languages.Hover> {
+  ): Promise<languages.Hover | undefined> {
     const resource = model.uri;
     const worker = await this._worker(model.uri);
     const hoverItem = await worker.doHover(resource.toString(), position);
@@ -268,7 +267,6 @@ export class HoverAdapter implements languages.HoverProvider {
       };
     }
 
-    // @ts-ignore
     return;
   }
 

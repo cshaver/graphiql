@@ -40,8 +40,6 @@ export const initialState: SessionState = {
   operationLoading: true,
   operationErrors: null,
   operations: [],
-  // @ts-ignore
-  editors: {},
 };
 
 export const initialContextState: SessionState & SessionHandlers = {

@@ -14,10 +14,9 @@ import {
 
 import * as monaco from 'monaco-editor';
 
-// @ts-ignore
 export { language as monarchLanguage } from 'monaco-languages/release/esm/graphql/graphql';
 
-export const LANGUAGE_ID = 'graphqlDev';
+export const LANGUAGE_ID = 'graphqlDev' as const;
 
 monaco.languages.register({
   id: LANGUAGE_ID,
