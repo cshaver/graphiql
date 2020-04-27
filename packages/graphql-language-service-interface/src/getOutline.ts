@@ -54,8 +54,6 @@ const OUTLINEABLE_KINDS = {
 
 export type OutlineableKinds = keyof typeof OUTLINEABLE_KINDS;
 
-// type OutlineableNodes = FieldNode | OperationDefinitionNode | DocumentNode | SelectionSetNode | NameNode | FragmentDefinitionNode | FragmentSpreadNode |InlineFragmentNode | ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode
-
 type OutlineTreeResult =
   | {
       representativeName: string;
@@ -70,11 +68,13 @@ type OutlineTreeResult =
   | FieldNode[]
   | SelectionSetNode;
 
-type OutlineTreeConverterType = Partial<
-  {
-    [key in OutlineableKinds]: (node: any) => OutlineTreeResult;
-  }
->;
+type OutlineTreeConverterType = {
+  [key in OutlineableKinds]: (node: any) => OutlineTreeResult;
+};
+
+function isOutlineableKind(kind: string): kind is OutlineableKinds {
+  return Boolean((OUTLINEABLE_KINDS as { [key: string]: boolean })[kind]);
+}
 
 export function getOutline(documentText: string): Outline | null {
   let ast;
@@ -87,8 +87,7 @@ export function getOutline(documentText: string): Outline | null {
   const visitorFns = outlineTreeConverter(documentText);
   const outlineTrees = visit(ast, {
     leave(node) {
-      if (visitorFns !== undefined && node.kind in visitorFns) {
-        // @ts-ignore
+      if (isOutlineableKind(node.kind)) {
         return visitorFns[node.kind](node);
       }
       return null;
