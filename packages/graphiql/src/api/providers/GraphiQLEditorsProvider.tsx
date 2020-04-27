@@ -9,11 +9,8 @@ import {
   EditorAction,
 } from '../actions/editorActions';
 
-// @ts-ignore
 import EditorWorker from 'worker-loader!monaco-editor/esm/vs/editor/editor.worker';
-// @ts-ignore
 import JSONWorker from 'worker-loader!monaco-editor/esm/vs/language/json/json.worker';
-// @ts-ignore
 import GraphQLWorker from 'worker-loader!monaco-graphql/esm/graphql.worker';
 
 window.MonacoEnvironment = {
