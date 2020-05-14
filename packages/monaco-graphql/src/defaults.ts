@@ -63,7 +63,7 @@ export class LanguageServiceDefaultsImpl
   }
 
   setSchemaUri(schemaUri: string): void {
-    this.setSchemaConfig({ ...this._schemaConfig, schema: schemaUri });
+    this.setSchemaConfig({ ...this._schemaConfig, uri: schemaUri });
   }
 
   setModeConfiguration(
@@ -95,14 +95,18 @@ export const modeConfigurationDefault: Required<monaco.languages.graphql.ModeCon
 };
 
 export const schemaDefault: Required<monaco.languages.graphql.SchemaConfig> = {
-  schema: 'http://localhost:8000',
-  projects: [],
-  documents: ['**.graphql'],
-  schemaLoader: null,
+  uri: 'http://localhost:8000',
+  buildSchemaOptions: {
+    assumeValid: true,
+    assumeValidSDL: true,
+    commentDescriptions: true,
+  },
+  introspectionOptions: { descriptions: true },
+  requestOpts: {},
 };
 
 export const formattingDefaults: Required<monaco.languages.graphql.FormattingOptions> = {
   prettierConfig: {
-    tabsWidth: 5,
+    tabWidth: 4,
   },
 };
