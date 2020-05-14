@@ -22,12 +22,12 @@
     "types": ["node", "jest"]
   },
   "exclude": [
-    "**/__tests__/**",
-    "**/dist/**.*",
-    "**/*.spec.ts",
-    "**/*.spec.js",
-    "**/*-test.ts",
-    "**/*-test.js",
-    "**/node_modules/**"
+    "../**/__tests__/**",
+    "../**/dist/**.*",
+    "../**/esm/**.*",
+    "../**/*.spec.*",
+    "../**/*-test.*",
+    "../**/node_modules/**",
+    "../**/*.stories.*"
   ]
 }
