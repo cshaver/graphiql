@@ -5,24 +5,16 @@
  *  LICENSE file in the root directory of this source tree.
  */
 
-/// <reference path='../../../../node_modules/monaco-editor/monaco.d.ts'/>
+declare namespace monaco.languages.graphql {
+  export type SchemaLoader = import('graphql-languageservice').SchemaLoader;
+  export type SchemaConfig = import('graphql-languageservice').SchemaConfig;
 
-declare module monaco.languages.graphql {
-  import type { SchemaLoader, SchemaConfig } from 'graphql-languageservice';
-
-  import type { GraphQLSchema } from 'graphql';
-  import type { Options as PrettierConfig } from 'prettier';
-
-  import { MonacoGraphQLApi } from '../api';
+  type GraphQLSchema = import('graphql').GraphQLSchema;
+  type PrettierConfig = import('prettier').Options;
+  type MonacoGraphQLApi = import('../api').MonacoGraphQLApi;
 
   export interface IDisposable {
     dispose(): void;
-  }
-
-  export type SchemaConfig = SchemaConfig;
-
-  export interface IEvent<T> {
-    (listener: (e: T) => any, thisArg?: any): IDisposable;
   }
 
   export type FilePointer = string | string[];
@@ -87,7 +79,7 @@ declare module monaco.languages.graphql {
     languageId: string;
     enableSchemaRequest: boolean;
     schemaConfig: SchemaConfig;
-    schemaLoader: () => Promise<GraphQLSchema>;
+    schemaLoader: SchemaLoader;
     formattingOptions?: FormattingOptions;
   }
 
@@ -99,7 +91,7 @@ declare module monaco.languages.graphql {
     readonly formattingOptions: FormattingOptions;
     readonly modeConfiguration: ModeConfiguration;
     setSchemaConfig(options: SchemaConfig): void;
-    updateSchemaConfig(options: Partial<SchemaOptoons>): void;
+    updateSchemaConfig(options: Partial<SchemaConfig>): void;
     setSchemaUri(schemaUri: string): void;
     setFormattingOptions(formattingOptions: FormattingOptions): void;
     setModeConfiguration(modeConfiguration: ModeConfiguration): void;
@@ -109,5 +101,3 @@ declare module monaco.languages.graphql {
 
   export const graphqlDefaults: LanguageServiceDefaults;
 }
-
-// declare module ''monaco-editor-core/esm/vs/editor/editor.worker';
