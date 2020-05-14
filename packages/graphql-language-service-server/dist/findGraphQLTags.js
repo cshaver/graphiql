@@ -43,10 +43,10 @@ function findGraphQLTags(text, ext) {
     const result = [];
     const plugins = BABEL_PLUGINS.slice(0, BABEL_PLUGINS.length);
     if (ext === '.ts' || ext === '.tsx') {
-        plugins === null || plugins === void 0 ? void 0 : plugins.push('typescript');
+        plugins?.push('typescript');
     }
     else {
-        plugins === null || plugins === void 0 ? void 0 : plugins.push('flow', 'flowComments');
+        plugins?.push('flow', 'flowComments');
     }
     PARSER_OPTIONS.plugins = plugins;
     const ast = parser_1.parse(text, PARSER_OPTIONS);

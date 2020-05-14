@@ -25,7 +25,7 @@ function getAutocompleteSuggestions(schema, queryText, cursor, contextToken) {
     if (kind === graphql_language_service_parser_1.RuleKinds.SELECTION_SET ||
         kind === graphql_language_service_parser_1.RuleKinds.FIELD ||
         kind === graphql_language_service_parser_1.RuleKinds.ALIASED_FIELD) {
-        return getSuggestionsForFieldNames(token, typeInfo, schema, kind);
+        return getSuggestionsForFieldNames(token, typeInfo, schema);
     }
     if (kind === graphql_language_service_parser_1.RuleKinds.ARGUMENTS ||
         (kind === graphql_language_service_parser_1.RuleKinds.ARGUMENT && step === 0)) {
@@ -34,7 +34,7 @@ function getAutocompleteSuggestions(schema, queryText, cursor, contextToken) {
             return autocompleteUtils_1.hintList(token, argDefs.map(argDef => ({
                 label: argDef.name,
                 detail: String(argDef.type),
-                documentation: argDef.description,
+                documentation: argDef.description ?? undefined,
                 kind: vscode_languageserver_types_1.CompletionItemKind.Variable,
             })));
         }
@@ -49,7 +49,7 @@ function getAutocompleteSuggestions(schema, queryText, cursor, contextToken) {
             return autocompleteUtils_1.hintList(token, objectFields.map(field => ({
                 label: field.name,
                 detail: String(field.type),
-                documentation: field.description,
+                documentation: field.description ?? undefined,
                 kind: completionKind,
             })));
         }
@@ -58,16 +58,16 @@ function getAutocompleteSuggestions(schema, queryText, cursor, contextToken) {
         (kind === graphql_language_service_parser_1.RuleKinds.LIST_VALUE && step === 1) ||
         (kind === graphql_language_service_parser_1.RuleKinds.OBJECT_FIELD && step === 2) ||
         (kind === graphql_language_service_parser_1.RuleKinds.ARGUMENT && step === 2)) {
-        return getSuggestionsForInputValues(token, typeInfo, kind);
+        return getSuggestionsForInputValues(token, typeInfo);
     }
     if ((kind === graphql_language_service_parser_1.RuleKinds.TYPE_CONDITION && step === 1) ||
         (kind === graphql_language_service_parser_1.RuleKinds.NAMED_TYPE &&
             state.prevState != null &&
             state.prevState.kind === graphql_language_service_parser_1.RuleKinds.TYPE_CONDITION)) {
-        return getSuggestionsForFragmentTypeConditions(token, typeInfo, schema, kind);
+        return getSuggestionsForFragmentTypeConditions(token, typeInfo, schema);
     }
     if (kind === graphql_language_service_parser_1.RuleKinds.FRAGMENT_SPREAD && step === 1) {
-        return getSuggestionsForFragmentSpread(token, typeInfo, schema, queryText, kind);
+        return getSuggestionsForFragmentSpread(token, typeInfo, schema, queryText);
     }
     if ((kind === graphql_language_service_parser_1.RuleKinds.VARIABLE_DEFINITION && step === 2) ||
         (kind === graphql_language_service_parser_1.RuleKinds.LIST_TYPE && step === 1) ||
@@ -75,15 +75,15 @@ function getAutocompleteSuggestions(schema, queryText, cursor, contextToken) {
             state.prevState &&
             (state.prevState.kind === graphql_language_service_parser_1.RuleKinds.VARIABLE_DEFINITION ||
                 state.prevState.kind === graphql_language_service_parser_1.RuleKinds.LIST_TYPE))) {
-        return getSuggestionsForVariableDefinition(token, schema, kind);
+        return getSuggestionsForVariableDefinition(token, schema);
     }
     if (kind === graphql_language_service_parser_1.RuleKinds.DIRECTIVE) {
-        return getSuggestionsForDirective(token, state, schema, kind);
+        return getSuggestionsForDirective(token, state, schema);
     }
     return [];
 }
 exports.getAutocompleteSuggestions = getAutocompleteSuggestions;
-function getSuggestionsForFieldNames(token, typeInfo, schema, kind) {
+function getSuggestionsForFieldNames(token, typeInfo, schema) {
     if (typeInfo.parentType) {
         const parentType = typeInfo.parentType;
         let fields = [];
@@ -100,23 +100,24 @@ function getSuggestionsForFieldNames(token, typeInfo, schema, kind) {
             sortText: String(index) + field.name,
             label: field.name,
             detail: String(field.type),
-            documentation: field.description,
-            deprecated: field.isDeprecated,
-            isDeprecated: field.isDeprecated,
-            deprecationReason: field.deprecationReason,
+            documentation: field.description ?? undefined,
             kind: vscode_languageserver_types_1.CompletionItemKind.Field,
+            ...('isDeprecated' in field && { deprecated: field.isDeprecated }),
+            ...('deprecationReason' in field && {
+                deprecationReason: field.deprecationReason,
+            }),
         })));
     }
     return [];
 }
-function getSuggestionsForInputValues(token, typeInfo, kind) {
+function getSuggestionsForInputValues(token, typeInfo) {
     const namedInputType = graphql_1.getNamedType(typeInfo.inputType);
     if (namedInputType instanceof graphql_1.GraphQLEnumType) {
         const values = namedInputType.getValues();
         return autocompleteUtils_1.hintList(token, values.map((value) => ({
             label: value.name,
             detail: String(namedInputType),
-            documentation: value.description,
+            documentation: value.description ?? undefined,
             deprecated: value.isDeprecated,
             isDeprecated: value.isDeprecated,
             deprecationReason: value.deprecationReason,
@@ -141,7 +142,7 @@ function getSuggestionsForInputValues(token, typeInfo, kind) {
     }
     return [];
 }
-function getSuggestionsForFragmentTypeConditions(token, typeInfo, schema, kind) {
+function getSuggestionsForFragmentTypeConditions(token, typeInfo, schema) {
     let possibleTypes;
     if (typeInfo.parentType) {
         if (graphql_1.isAbstractType(typeInfo.parentType)) {
@@ -172,7 +173,7 @@ function getSuggestionsForFragmentTypeConditions(token, typeInfo, schema, kind) 
         };
     }));
 }
-function getSuggestionsForFragmentSpread(token, typeInfo, schema, queryText, kind) {
+function getSuggestionsForFragmentSpread(token, typeInfo, schema, queryText) {
     const typeMap = schema.getTypeMap();
     const defState = autocompleteUtils_1.getDefinitionState(token.state);
     const fragments = getFragmentDefinitions(queryText);
@@ -219,7 +220,7 @@ function getFragmentDefinitions(queryText) {
     return fragmentDefs;
 }
 exports.getFragmentDefinitions = getFragmentDefinitions;
-function getSuggestionsForVariableDefinition(token, schema, kind) {
+function getSuggestionsForVariableDefinition(token, schema) {
     const inputTypeMap = schema.getTypeMap();
     const inputTypes = autocompleteUtils_1.objectValues(inputTypeMap).filter(graphql_1.isInputType);
     return autocompleteUtils_1.hintList(token, inputTypes.map((type) => ({
@@ -228,7 +229,7 @@ function getSuggestionsForVariableDefinition(token, schema, kind) {
         kind: vscode_languageserver_types_1.CompletionItemKind.Variable,
     })));
 }
-function getSuggestionsForDirective(token, state, schema, kind) {
+function getSuggestionsForDirective(token, state, schema) {
     if (state.prevState && state.prevState.kind) {
         const directives = schema
             .getDirectives()

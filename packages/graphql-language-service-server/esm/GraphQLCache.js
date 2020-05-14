@@ -1,10 +1,3 @@
-var __asyncValues = (this && this.__asyncValues) || function (o) {
-    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-    var m = o[Symbol.asyncIterator], i;
-    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
-    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
-    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
-};
 import * as fs from 'fs';
 import { Kind, extendSchema, parse, visit } from 'graphql';
 import nullthrows from 'nullthrows';
@@ -14,21 +7,10 @@ import glob from 'glob';
 const MAX_READS = 200;
 const { DOCUMENT, FRAGMENT_DEFINITION, OBJECT_TYPE_DEFINITION, INTERFACE_TYPE_DEFINITION, ENUM_TYPE_DEFINITION, UNION_TYPE_DEFINITION, SCALAR_TYPE_DEFINITION, INPUT_OBJECT_TYPE_DEFINITION, SCALAR_TYPE_EXTENSION, OBJECT_TYPE_EXTENSION, INTERFACE_TYPE_EXTENSION, UNION_TYPE_EXTENSION, ENUM_TYPE_EXTENSION, INPUT_OBJECT_TYPE_EXTENSION, DIRECTIVE_DEFINITION, } = Kind;
 export async function getGraphQLCache(configDir, parser, extensions, config) {
-    var e_1, _a;
-    let graphQLConfig = config !== null && config !== void 0 ? config : (await loadConfig({ rootDir: configDir }));
+    let graphQLConfig = config ?? (await loadConfig({ rootDir: configDir }));
     if (extensions && extensions.length > 0) {
-        try {
-            for (var extensions_1 = __asyncValues(extensions), extensions_1_1; extensions_1_1 = await extensions_1.next(), !extensions_1_1.done;) {
-                const extension = extensions_1_1.value;
-                graphQLConfig = await extension(graphQLConfig);
-            }
-        }
-        catch (e_1_1) { e_1 = { error: e_1_1 }; }
-        finally {
-            try {
-                if (extensions_1_1 && !extensions_1_1.done && (_a = extensions_1.return)) await _a.call(extensions_1);
-            }
-            finally { if (e_1) throw e_1.error; }
+        for await (const extension of extensions) {
+            graphQLConfig = await extension(graphQLConfig);
         }
     }
     return new GraphQLCache(configDir, graphQLConfig, parser);
@@ -229,7 +211,6 @@ export class GraphQLCache {
             });
         };
         this.getSchema = async (appName, queryHasExtensions) => {
-            var _a;
             const projectConfig = this._graphQLConfig.getProject(appName);
             if (!projectConfig) {
                 return null;
@@ -250,7 +231,7 @@ export class GraphQLCache {
                 }
                 schema = await projectConfig.getSchema();
             }
-            const customDirectives = (_a = projectConfig === null || projectConfig === void 0 ? void 0 : projectConfig.extensions) === null || _a === void 0 ? void 0 : _a.customDirectives;
+            const customDirectives = projectConfig?.extensions?.customDirectives;
             if (customDirectives && schema) {
                 const directivesSDL = customDirectives.join('\n\n');
                 schema = extendSchema(schema, parse(directivesSDL, {
@@ -282,7 +263,11 @@ export class GraphQLCache {
                 })
                     .then((response) => {
                     if (response) {
-                        responses.push(Object.assign(Object.assign({}, response), { mtime: fileInfo.mtime, size: fileInfo.size }));
+                        responses.push({
+                            ...response,
+                            mtime: fileInfo.mtime,
+                            size: fileInfo.size,
+                        });
                     }
                 }));
                 await Promise.all(promises);
@@ -399,7 +384,7 @@ export class GraphQLCache {
             graphQLFileMap.delete(filePath);
         }
         else if (fileAndContent) {
-            const graphQLFileInfo = Object.assign(Object.assign({}, fileAndContent), metrics);
+            const graphQLFileInfo = { ...fileAndContent, ...metrics };
             graphQLFileMap.set(filePath, graphQLFileInfo);
         }
         return graphQLFileMap;

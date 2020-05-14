@@ -14,7 +14,7 @@ export class MessageProcessor {
         this._extensions = extensions;
         this._fileExtensions = fileExtensions;
         this._graphQLConfig = config;
-        this._parser = parser !== null && parser !== void 0 ? parser : parseDocument;
+        this._parser = parser ?? parseDocument;
     }
     async handleInitializeRequest(params, _token, configDir) {
         if (!params) {
@@ -382,7 +382,10 @@ function processDiagnosticsMessage(results, query, range) {
     const processedResults = results.filter(diagnostic => diagnostic.range.end.lessThanOrEqualTo(lastCharacterPosition));
     if (range) {
         const offset = range.start;
-        return processedResults.map(diagnostic => (Object.assign(Object.assign({}, diagnostic), { range: new Range(new Position(diagnostic.range.start.line + offset.line, diagnostic.range.start.character), new Position(diagnostic.range.end.line + offset.line, diagnostic.range.end.character)) })));
+        return processedResults.map(diagnostic => ({
+            ...diagnostic,
+            range: new Range(new Position(diagnostic.range.start.line + offset.line, diagnostic.range.start.character), new Position(diagnostic.range.end.line + offset.line, diagnostic.range.end.character)),
+        }));
     }
     return processedResults;
 }

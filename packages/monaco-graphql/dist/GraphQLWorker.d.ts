@@ -1,5 +1,5 @@
+/// <reference path="../src/typings/monaco.d.ts" />
 /// <reference types="monaco-editor/monaco" />
-/// <reference types="src/typings/monaco" />
 import type { worker, editor, Position, IRange } from 'monaco-editor';
 import { CompletionItem as GraphQLCompletionItem, SchemaResponse } from 'graphql-languageservice';
 import type { GraphQLSchema, DocumentNode } from 'graphql';

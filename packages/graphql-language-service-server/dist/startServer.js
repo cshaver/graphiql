@@ -72,7 +72,7 @@ exports.default = startServer;
 function initializeHandlers({ reader, writer, logger, options = {}, }) {
     try {
         const connection = vscode_jsonrpc_1.createMessageConnection(reader, writer, logger);
-        addHandlers(connection, logger, options.configDir, (options === null || options === void 0 ? void 0 : options.extensions) || [], options.config, options.parser, options.fileExtensions);
+        addHandlers(connection, logger, options.configDir, options?.extensions || [], options.config, options.parser, options.fileExtensions);
         return connection;
     }
     catch (err) {

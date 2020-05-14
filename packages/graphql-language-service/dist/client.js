@@ -38,7 +38,6 @@ function main(command, argv) {
 }
 exports.default = main;
 function _getAutocompleteSuggestions(queryText, point, schemaPath) {
-    var _a;
     assert_1.default(schemaPath, 'A schema path is required to provide GraphQL autocompletion');
     try {
         const schema = schemaPath ? generateSchema(schemaPath) : null;
@@ -53,12 +52,11 @@ function _getAutocompleteSuggestions(queryText, point, schemaPath) {
         return GRAPHQL_SUCCESS_CODE;
     }
     catch (error) {
-        process.stderr.write(((_a = error === null || error === void 0 ? void 0 : error.stack) !== null && _a !== void 0 ? _a : String(error)) + '\n');
+        process.stderr.write((error?.stack ?? String(error)) + '\n');
         return GRAPHQL_FAILURE_CODE;
     }
 }
 function _getDiagnostics(_filePath, queryText, schemaPath) {
-    var _a;
     try {
         const schema = schemaPath ? generateSchema(schemaPath) : null;
         const resultArray = graphql_language_service_interface_1.getDiagnostics(queryText, schema);
@@ -70,12 +68,11 @@ function _getDiagnostics(_filePath, queryText, schemaPath) {
         return GRAPHQL_SUCCESS_CODE;
     }
     catch (error) {
-        process.stderr.write(((_a = error === null || error === void 0 ? void 0 : error.stack) !== null && _a !== void 0 ? _a : String(error)) + '\n');
+        process.stderr.write((error?.stack ?? String(error)) + '\n');
         return GRAPHQL_FAILURE_CODE;
     }
 }
 function _getOutline(queryText) {
-    var _a;
     try {
         const outline = graphql_language_service_interface_1.getOutline(queryText);
         if (outline) {
@@ -86,7 +83,7 @@ function _getOutline(queryText) {
         }
     }
     catch (error) {
-        process.stderr.write(((_a = error === null || error === void 0 ? void 0 : error.stack) !== null && _a !== void 0 ? _a : String(error)) + '\n');
+        process.stderr.write((error?.stack ?? String(error)) + '\n');
         return GRAPHQL_FAILURE_CODE;
     }
     return GRAPHQL_SUCCESS_CODE;

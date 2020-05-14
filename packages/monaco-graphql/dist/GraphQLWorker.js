@@ -1,50 +1,4 @@
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
+"use strict";
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -52,125 +6,72 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
-define(["require", "exports", "graphql-languageservice", "./utils"], function (require, exports, graphql_languageservice_1, utils_1) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var GraphQLWorker = (function () {
-        function GraphQLWorker(ctx, createData) {
-            this._ctx = ctx;
-            var serviceConfig = {
-                schemaConfig: createData.schemaConfig,
-            };
-            if (createData.schemaLoader) {
-                serviceConfig.schemaLoader = createData.schemaLoader;
-            }
-            this._languageService = new graphql_languageservice_1.LanguageService(serviceConfig);
-            this._formattingOptions = createData.formattingOptions;
+Object.defineProperty(exports, "__esModule", { value: true });
+const graphql_languageservice_1 = require("graphql-languageservice");
+const utils_1 = require("./utils");
+class GraphQLWorker {
+    constructor(ctx, createData) {
+        this._ctx = ctx;
+        const serviceConfig = {
+            schemaConfig: createData.schemaConfig,
+        };
+        if (createData.schemaLoader) {
+            serviceConfig.schemaLoader = createData.schemaLoader;
         }
-        GraphQLWorker.prototype.getSchemaResponse = function (_uri) {
-            return __awaiter(this, void 0, void 0, function () {
-                return __generator(this, function (_a) {
-                    return [2, this._languageService.getSchemaResponse()];
-                });
-            });
+        this._languageService = new graphql_languageservice_1.LanguageService(serviceConfig);
+        this._formattingOptions = createData.formattingOptions;
+    }
+    async getSchemaResponse(_uri) {
+        return this._languageService.getSchemaResponse();
+    }
+    async loadSchema(_uri) {
+        return this._languageService.getSchema();
+    }
+    async doValidation(uri) {
+        const document = this._getTextDocument(uri);
+        const graphqlDiagnostics = await this._languageService.getDiagnostics(uri, document);
+        return graphqlDiagnostics.map(utils_1.toMarkerData);
+    }
+    async doComplete(uri, position) {
+        const document = this._getTextDocument(uri);
+        const graphQLPosition = utils_1.toGraphQLPosition(position);
+        const suggestions = await this._languageService.getCompletion(uri, document, graphQLPosition);
+        return suggestions.map(suggestion => utils_1.toCompletion(suggestion, graphql_languageservice_1.getRange({
+            column: graphQLPosition.character + 1,
+            line: graphQLPosition.line + 1,
+        }, document)));
+    }
+    async doHover(uri, position) {
+        const document = this._getTextDocument(uri);
+        const graphQLPosition = utils_1.toGraphQLPosition(position);
+        const hover = await this._languageService.getHover(uri, document, graphQLPosition);
+        return {
+            content: hover,
+            range: utils_1.toMonacoRange(graphql_languageservice_1.getRange({
+                column: graphQLPosition.character,
+                line: graphQLPosition.line,
+            }, document)),
         };
-        GraphQLWorker.prototype.loadSchema = function (_uri) {
-            return __awaiter(this, void 0, void 0, function () {
-                return __generator(this, function (_a) {
-                    return [2, this._languageService.getSchema()];
-                });
-            });
-        };
-        GraphQLWorker.prototype.doValidation = function (uri) {
-            return __awaiter(this, void 0, void 0, function () {
-                var document, graphqlDiagnostics;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            document = this._getTextDocument(uri);
-                            return [4, this._languageService.getDiagnostics(uri, document)];
-                        case 1:
-                            graphqlDiagnostics = _a.sent();
-                            return [2, graphqlDiagnostics.map(utils_1.toMarkerData)];
-                    }
-                });
-            });
-        };
-        GraphQLWorker.prototype.doComplete = function (uri, position) {
-            return __awaiter(this, void 0, void 0, function () {
-                var document, graphQLPosition, suggestions;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            document = this._getTextDocument(uri);
-                            graphQLPosition = utils_1.toGraphQLPosition(position);
-                            return [4, this._languageService.getCompletion(uri, document, graphQLPosition)];
-                        case 1:
-                            suggestions = _a.sent();
-                            return [2, suggestions.map(function (suggestion) {
-                                    return utils_1.toCompletion(suggestion, graphql_languageservice_1.getRange({
-                                        column: graphQLPosition.character + 1,
-                                        line: graphQLPosition.line + 1,
-                                    }, document));
-                                })];
-                    }
-                });
-            });
-        };
-        GraphQLWorker.prototype.doHover = function (uri, position) {
-            return __awaiter(this, void 0, void 0, function () {
-                var document, graphQLPosition, hover;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            document = this._getTextDocument(uri);
-                            graphQLPosition = utils_1.toGraphQLPosition(position);
-                            return [4, this._languageService.getHover(uri, document, graphQLPosition)];
-                        case 1:
-                            hover = _a.sent();
-                            return [2, {
-                                    content: hover,
-                                    range: utils_1.toMonacoRange(graphql_languageservice_1.getRange({
-                                        column: graphQLPosition.character,
-                                        line: graphQLPosition.line,
-                                    }, document)),
-                                }];
-                    }
-                });
-            });
-        };
-        GraphQLWorker.prototype.doFormat = function (text) {
-            return __awaiter(this, void 0, void 0, function () {
-                var prettierStandalone, prettierGraphqlParser;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0: return [4, new Promise(function (resolve_1, reject_1) { require(['prettier/standalone'], resolve_1, reject_1); }).then(__importStar)];
-                        case 1:
-                            prettierStandalone = _a.sent();
-                            return [4, new Promise(function (resolve_2, reject_2) { require(['prettier/parser-graphql'], resolve_2, reject_2); }).then(__importStar)];
-                        case 2:
-                            prettierGraphqlParser = _a.sent();
-                            return [2, prettierStandalone.format(text, __assign(__assign({}, this._formattingOptions), { parser: 'graphql', plugins: [prettierGraphqlParser] }))];
-                    }
-                });
-            });
-        };
-        GraphQLWorker.prototype.doParse = function (text) {
-            return __awaiter(this, void 0, void 0, function () {
-                return __generator(this, function (_a) {
-                    return [2, this._languageService.parse(text)];
-                });
-            });
-        };
-        GraphQLWorker.prototype._getTextDocument = function (_uri) {
-            var models = this._ctx.getMirrorModels();
-            if (models.length > 0) {
-                return models[0].getValue();
-            }
-            return '';
-        };
-        return GraphQLWorker;
-    }());
-    exports.GraphQLWorker = GraphQLWorker;
-});
+    }
+    async doFormat(text) {
+        const prettierStandalone = await Promise.resolve().then(() => __importStar(require('prettier/standalone')));
+        const prettierGraphqlParser = await Promise.resolve().then(() => __importStar(require('prettier/parser-graphql')));
+        return prettierStandalone.format(text, {
+            ...this._formattingOptions,
+            parser: 'graphql',
+            plugins: [prettierGraphqlParser],
+        });
+    }
+    async doParse(text) {
+        return this._languageService.parse(text);
+    }
+    _getTextDocument(_uri) {
+        const models = this._ctx.getMirrorModels();
+        if (models.length > 0) {
+            return models[0].getValue();
+        }
+        return '';
+    }
+}
+exports.GraphQLWorker = GraphQLWorker;
 //# sourceMappingURL=GraphQLWorker.js.map

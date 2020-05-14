@@ -16,7 +16,7 @@ class MessageProcessor {
         this._extensions = extensions;
         this._fileExtensions = fileExtensions;
         this._graphQLConfig = config;
-        this._parser = parser !== null && parser !== void 0 ? parser : parseDocument_1.parseDocument;
+        this._parser = parser ?? parseDocument_1.parseDocument;
     }
     async handleInitializeRequest(params, _token, configDir) {
         if (!params) {
@@ -385,7 +385,10 @@ function processDiagnosticsMessage(results, query, range) {
     const processedResults = results.filter(diagnostic => diagnostic.range.end.lessThanOrEqualTo(lastCharacterPosition));
     if (range) {
         const offset = range.start;
-        return processedResults.map(diagnostic => (Object.assign(Object.assign({}, diagnostic), { range: new graphql_language_service_utils_1.Range(new graphql_language_service_utils_1.Position(diagnostic.range.start.line + offset.line, diagnostic.range.start.character), new graphql_language_service_utils_1.Position(diagnostic.range.end.line + offset.line, diagnostic.range.end.character)) })));
+        return processedResults.map(diagnostic => ({
+            ...diagnostic,
+            range: new graphql_language_service_utils_1.Range(new graphql_language_service_utils_1.Position(diagnostic.range.start.line + offset.line, diagnostic.range.start.character), new graphql_language_service_utils_1.Position(diagnostic.range.end.line + offset.line, diagnostic.range.end.character)),
+        }));
     }
     return processedResults;
 }

@@ -62,7 +62,7 @@ export default async function startServer(options) {
 function initializeHandlers({ reader, writer, logger, options = {}, }) {
     try {
         const connection = createMessageConnection(reader, writer, logger);
-        addHandlers(connection, logger, options.configDir, (options === null || options === void 0 ? void 0 : options.extensions) || [], options.config, options.parser, options.fileExtensions);
+        addHandlers(connection, logger, options.configDir, options?.extensions || [], options.config, options.parser, options.fileExtensions);
         return connection;
     }
     catch (err) {
