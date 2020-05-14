@@ -3,9 +3,8 @@
 import 'regenerator-runtime/runtime';
 import 'monaco-graphql/esm/monaco.contribution';
 
-// eslint-disable-next-line spaced-comment
 /// <reference path='../../../node_modules/monaco-editor/monaco.d.ts'/>
-// eslint-disable-next-line spaced-comment
+
 /// <reference path='../../../packages/monaco-graphql/src/typings/monaco.d.ts'/>
 
 // NOTE: using loader syntax becuase Yaml worker imports editor.worker directly and that
@@ -69,7 +68,7 @@ const variablesEditor = monaco.editor.create(
 );
 const model = monaco.editor.createModel(
   `
-query Example($limit: Int) { 
+query Example($limit: Int) {
   launchesPast(limit: $limit) {
     mission_name
     # format me using the right click context menu

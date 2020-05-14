@@ -5,7 +5,6 @@
  *  LICENSE file in the root directory of this source tree.
  */
 
-// eslint-disable-next-line spaced-comment
 /// <reference path='../../../../node_modules/monaco-editor/monaco.d.ts'/>
 
 declare module monaco.languages.graphql {
