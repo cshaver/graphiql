@@ -1,0 +1,1 @@
+{"version":3,"file":"useValueRef.js","sourceRoot":"","sources":["../../../src/api/hooks/useValueRef.ts"],"names":[],"mappings":";;AAAA,+BAA4D;AAQ5D,SAAwB,WAAW,CAAI,KAAQ;IAC7C,IAAM,GAAG,GAAG,cAAM,CAAC,KAAK,CAAC,CAAC;IAE1B,iBAAS,CAAC;QACR,GAAG,CAAC,OAAO,GAAG,KAAK,CAAC;IACtB,CAAC,EAAE,CAAC,KAAK,CAAC,CAAC,CAAC;IAEZ,OAAO,GAAG,CAAC;AACb,CAAC;AARD,8BAQC"}
