@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  *  Copyright (c) 2019 GraphQL Contributors
  *  All rights reserved.
@@ -16,15 +15,12 @@ import {
   GraphQLType,
   GraphQLCompositeType,
   GraphQLEnumValue,
-  Kind,
-  KindEnum,
   GraphQLField,
+  GraphQLInputField,
 } from 'graphql';
 
 import {
   CompletionItem,
-  ContextToken,
-  State,
   AllTypeInfo,
   Position,
 } from 'graphql-language-service-types';
@@ -49,8 +45,9 @@ import {
 import {
   CharacterStream,
   onlineParser,
-  RuleKind,
   RuleKinds,
+  ContextToken,
+  State,
 } from 'graphql-language-service-parser';
 
 import {
@@ -101,7 +98,7 @@ export function getAutocompleteSuggestions(
     kind === RuleKinds.FIELD ||
     kind === RuleKinds.ALIASED_FIELD
   ) {
-    return getSuggestionsForFieldNames(token, typeInfo, schema, kind);
+    return getSuggestionsForFieldNames(token, typeInfo, schema);
   }
 
   // Argument names
@@ -113,10 +110,10 @@ export function getAutocompleteSuggestions(
     if (argDefs) {
       return hintList(
         token,
-        argDefs.map(argDef => ({
+        argDefs.map<CompletionItem>(argDef => ({
           label: argDef.name,
           detail: String(argDef.type),
-          documentation: argDef.description,
+          documentation: argDef.description ?? undefined,
           kind: CompletionItemKind.Variable,
         })),
       );
@@ -136,10 +133,10 @@ export function getAutocompleteSuggestions(
           : CompletionItemKind.Field;
       return hintList(
         token,
-        objectFields.map(field => ({
+        objectFields.map<CompletionItem>(field => ({
           label: field.name,
           detail: String(field.type),
-          documentation: field.description,
+          documentation: field.description ?? undefined,
           kind: completionKind,
         })),
       );
@@ -153,7 +150,7 @@ export function getAutocompleteSuggestions(
     (kind === RuleKinds.OBJECT_FIELD && step === 2) ||
     (kind === RuleKinds.ARGUMENT && step === 2)
   ) {
-    return getSuggestionsForInputValues(token, typeInfo, kind);
+    return getSuggestionsForInputValues(token, typeInfo);
   }
 
   // Fragment type conditions
@@ -163,23 +160,12 @@ export function getAutocompleteSuggestions(
       state.prevState != null &&
       state.prevState.kind === RuleKinds.TYPE_CONDITION)
   ) {
-    return getSuggestionsForFragmentTypeConditions(
-      token,
-      typeInfo,
-      schema,
-      kind,
-    );
+    return getSuggestionsForFragmentTypeConditions(token, typeInfo, schema);
   }
 
   // Fragment spread names
   if (kind === RuleKinds.FRAGMENT_SPREAD && step === 1) {
-    return getSuggestionsForFragmentSpread(
-      token,
-      typeInfo,
-      schema,
-      queryText,
-      kind,
-    );
+    return getSuggestionsForFragmentSpread(token, typeInfo, schema, queryText);
   }
 
   // Variable definition types
@@ -191,12 +177,12 @@ export function getAutocompleteSuggestions(
       (state.prevState.kind === RuleKinds.VARIABLE_DEFINITION ||
         state.prevState.kind === RuleKinds.LIST_TYPE))
   ) {
-    return getSuggestionsForVariableDefinition(token, schema, kind);
+    return getSuggestionsForVariableDefinition(token, schema);
   }
 
   // Directive names
   if (kind === RuleKinds.DIRECTIVE) {
-    return getSuggestionsForDirective(token, state, schema, kind);
+    return getSuggestionsForDirective(token, state, schema);
   }
 
   return [];
@@ -207,13 +193,14 @@ function getSuggestionsForFieldNames(
   token: ContextToken,
   typeInfo: AllTypeInfo,
   schema: GraphQLSchema,
-  kind: RuleKind.SelectionSet | RuleKind.Field | RuleKind.AliasedField,
 ): Array<CompletionItem> {
   if (typeInfo.parentType) {
     const parentType = typeInfo.parentType;
-    let fields: GraphQLField<null, null>[] = [];
+    let fields: (GraphQLField<null, null> | GraphQLInputField)[] = [];
     if ('getFields' in parentType) {
-      fields = objectValues<GraphQLField<null, null>>(parentType.getFields());
+      fields = objectValues<GraphQLField<null, null> | GraphQLInputField>(
+        parentType.getFields(),
+      );
     }
 
     if (isCompositeType(parentType)) {
@@ -229,11 +216,12 @@ function getSuggestionsForFieldNames(
         sortText: String(index) + field.name,
         label: field.name,
         detail: String(field.type),
-        documentation: field.description,
-        deprecated: field.isDeprecated,
-        isDeprecated: field.isDeprecated,
-        deprecationReason: field.deprecationReason,
+        documentation: field.description ?? undefined,
         kind: CompletionItemKind.Field,
+        ...('isDeprecated' in field && { deprecated: field.isDeprecated }),
+        ...('deprecationReason' in field && {
+          deprecationReason: field.deprecationReason,
+        }),
       })),
     );
   }
@@ -243,18 +231,17 @@ function getSuggestionsForFieldNames(
 function getSuggestionsForInputValues(
   token: ContextToken,
   typeInfo: AllTypeInfo,
-  kind: string,
 ): CompletionItem[] {
   const namedInputType = getNamedType(typeInfo.inputType as GraphQLType);
   if (namedInputType instanceof GraphQLEnumType) {
-    const values: GraphQLEnumValues[] = namedInputType.getValues();
+    const values: GraphQLEnumValue[] = namedInputType.getValues();
     return hintList(
       token,
       values.map(
         (value: GraphQLEnumValue): CompletionItem => ({
           label: value.name,
           detail: String(namedInputType),
-          documentation: value.description,
+          documentation: value.description ?? undefined,
           deprecated: value.isDeprecated,
           isDeprecated: value.isDeprecated,
           deprecationReason: value.deprecationReason,
@@ -287,7 +274,6 @@ function getSuggestionsForFragmentTypeConditions(
   token: ContextToken,
   typeInfo: AllTypeInfo,
   schema: GraphQLSchema,
-  kind: Kind.TypeCondition | Kind.NamedType,
 ): Array<CompletionItem> {
   let possibleTypes: GraphQLType[];
   if (typeInfo.parentType) {
@@ -330,7 +316,6 @@ function getSuggestionsForFragmentSpread(
   typeInfo: AllTypeInfo,
   schema: GraphQLSchema,
   queryText: string,
-  kind: string,
 ): Array<CompletionItem> {
   const typeMap = schema.getTypeMap();
   const defState = getDefinitionState(token.state);
@@ -407,7 +392,6 @@ export function getFragmentDefinitions(
 function getSuggestionsForVariableDefinition(
   token: ContextToken,
   schema: GraphQLSchema,
-  kind: string,
 ): Array<CompletionItem> {
   const inputTypeMap = schema.getTypeMap();
   const inputTypes = objectValues(inputTypeMap).filter(isInputType);
@@ -426,7 +410,6 @@ function getSuggestionsForDirective(
   token: ContextToken,
   state: State,
   schema: GraphQLSchema,
-  kind: string,
 ): Array<CompletionItem> {
   if (state.prevState && state.prevState.kind) {
     const directives = schema
