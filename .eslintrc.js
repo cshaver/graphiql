@@ -229,7 +229,11 @@ module.exports = {
     'spaced-comment': [
       1,
       'always',
-      { line: { exceptions: ['-'] }, block: { balanced: true } },
+      {
+        line: { exceptions: ['-'] },
+        block: { balanced: true },
+        markers: ['/'],
+      },
     ],
     'wrap-regex': 0,
 
