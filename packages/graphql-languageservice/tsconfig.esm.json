@@ -2,8 +2,7 @@
   "extends": "../../resources/tsconfig.base.esm.json",
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "./esm",
-    "composite": true
+    "outDir": "./esm"
   },
   "references": [
     {
@@ -19,6 +18,5 @@
       "path": "../graphql-language-service-utils"
     }
   ],
-  "include": ["src"],
-  "exclude": ["**/__tests__/**", "**/*.spec.*"]
+  "include": ["src"]
 }
