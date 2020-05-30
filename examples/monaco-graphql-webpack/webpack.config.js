@@ -13,9 +13,11 @@ const resultConfig = {
   mode: process.env.NODE_ENV,
   entry: {
     app: './index.ts',
-    'editor.worker': 'monaco-editor/esm/vs/editor/editor.worker.js',
-    // 'json.worker': 'monaco-editor/esm/vs/language/json/json.worker.js',
     'graphql.worker': 'monaco-graphql/esm/graphql.worker.js',
+    // As an alternative to using MonacoWebpackPlugin,
+    // you can manually specify entry points like so:
+    // 'editor.worker': 'monaco-editor/esm/vs/editor/editor.worker.js',
+    // 'json.worker': 'monaco-editor/esm/vs/language/json/json.worker.js',
   },
   context: rootPath('src'),
   output: {
