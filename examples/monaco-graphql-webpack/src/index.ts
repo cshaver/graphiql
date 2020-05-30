@@ -8,18 +8,20 @@ import 'monaco-graphql/esm/monaco.contribution';
 // eslint-disable-next-line spaced-comment
 ///  <reference types='monaco-graphql'/>
 
-// NOTE: using loader syntax becuase Yaml worker imports editor.worker directly and that
+// NOTE: using loader syntax because Yaml worker imports editor.worker directly and that
 // import shouldn't go through loader syntax.
-// @ts-ignore
 import EditorWorker from 'worker-loader!monaco-editor/esm/vs/editor/editor.worker';
-// @ts-ignore
 import JSONWorker from 'worker-loader!monaco-editor/esm/vs/language/json/json.worker';
-// @ts-ignore
 import GraphQLWorker from 'worker-loader!monaco-graphql/esm/graphql.worker';
 
 const SCHEMA_URL = 'https://api.spacex.land/graphql/';
 
-// @ts-ignore
+declare global {
+  interface Window {
+    MonacoEnvironment?: monaco.Environment | undefined;
+  }
+}
+
 window.MonacoEnvironment = {
   getWorker(_workerId: string, label: string) {
     if (label === 'graphqlDev') {
@@ -39,8 +41,7 @@ schemaInput.value = SCHEMA_URL;
 
 schemaInput.onkeyup = e => {
   e.preventDefault();
-  // @ts-ignore
-  const val = e?.target?.value as string;
+  const val = (e.target as HTMLInputElement).value;
   if (val && typeof val === 'string') {
     monaco.languages.graphql.graphqlDefaults.setSchemaConfig({ uri: val });
   }
@@ -72,7 +73,7 @@ const variablesEditor = monaco.editor.create(
 );
 const model = monaco.editor.createModel(
   `
-query Example($limit: Int) { 
+query Example($limit: Int) {
   launchesPast(limit: $limit) {
     mission_name
     # format me using the right click context menu
@@ -100,14 +101,12 @@ const operationEditor = monaco.editor.create(
 );
 
 monaco.languages.graphql.graphqlDefaults.setFormattingOptions({
-  // TODO: get these types working properly
   prettierConfig: {
     printWith: 120,
   },
 });
 
 monaco.languages.graphql.graphqlDefaults.setSchemaConfig({
-  // TODO: get these types working properly
   uri: SCHEMA_URL,
 });
 
