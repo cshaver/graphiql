@@ -106,6 +106,38 @@ GraphQLAPI.setFormattingOptions({
 
 GraphQLAPI.setSchemaConfig({ uri: SCHEMA_URL });
 
+GraphQLAPI.setSchema(`# Enumeration type for a level of priority
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+# Our main todo type
+type Todo {
+  id: ID!
+  name: String!
+  description: String
+  priority: Priority!
+}
+
+type Query {
+  # Get one todo item
+  todo(id: ID!): Todo
+  # Get all todo items
+  allTodos: [Todo!]!
+}
+
+type Mutation {
+  addTodo(name: String!, priority: Priority = LOW): Todo!
+  removeTodo(id: ID!): Todo!
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}`);
+
 /**
  * Basic Operation Exec Example
  */
